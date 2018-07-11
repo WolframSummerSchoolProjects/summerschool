@@ -1,0 +1,549 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='WolframDesktop 11.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       161,          7]
+NotebookDataLength[     20978,        541]
+NotebookOptionsPosition[     20223,        520]
+NotebookOutlinePosition[     20578,        536]
+CellTagsIndexPosition[     20535,        533]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"aspectRatio", "[", "rect_Rectangle", "]"}], ":=", 
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"sides", "=", 
+        RowBox[{
+         RowBox[{"Differences", "[", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"rect", "[", 
+             RowBox[{"[", 
+              RowBox[{"1", ",", "All"}], "]"}], "]"}], ",", 
+            RowBox[{"rect", "[", 
+             RowBox[{"[", 
+              RowBox[{"2", ",", "All"}], "]"}], "]"}]}], "}"}], "]"}], "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}], "}"}], ",", 
+      RowBox[{
+       RowBox[{"First", "@", "sides"}], "/", 
+       RowBox[{"Last", "@", "sides"}]}]}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"getRectCoords", "[", "r_Rectangle", "]"}], ":=", 
+    RowBox[{"Join", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"r", "[", 
+        RowBox[{"[", 
+         RowBox[{"1", ",", "All"}], "]"}], "]"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"r", "[", 
+        RowBox[{"[", 
+         RowBox[{"2", ",", "All"}], "]"}], "]"}], "}"}]}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"centerMass", "[", "keypoints_", "]"}], ":=", 
+    RowBox[{"Round", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Total", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], "&"}], "/@", "keypoints"}], "]"}],
+         "/", 
+        RowBox[{"Length", "@", "keypoints"}]}], ",", " ", 
+       RowBox[{
+        RowBox[{"Total", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", "2", "]"}], "]"}], "&"}], "/@", "keypoints"}], "]"}],
+         "/", 
+        RowBox[{"Length", "@", "keypoints"}]}]}], "}"}]}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"applyMargin", "[", 
+    RowBox[{
+    "r_Rectangle", ",", "imgDimensions_List", ",", "percent_Integer"}], "]"}],
+    ":=", " ", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"rect", "=", "r"}], ",", 
+       RowBox[{"avgDim", "=", 
+        RowBox[{"Mean", "@", "imgDimensions"}]}]}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"rect", "[", 
+        RowBox[{"[", 
+         RowBox[{"1", ",", "All"}], "]"}], "]"}], "-=", 
+       RowBox[{"avgDim", "*", 
+        RowBox[{"percent", "/", "100"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"rect", "[", 
+        RowBox[{"[", 
+         RowBox[{"2", ",", "All"}], "]"}], "]"}], "+=", 
+       RowBox[{"avgDim", "*", 
+        RowBox[{"percent", "/", "100"}]}]}], ";", "\[IndentingNewLine]", 
+      "rect"}]}], "\[IndentingNewLine]", "]"}]}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"add", " ", "margin", " ", "in", " ", "%", " ", "to", " ", 
+     RowBox[{"rectangle", ".", " ", "Basically"}]}], ",", " ", 
+    RowBox[{
+     RowBox[{"If", " ", "percent"}], " ", ">", " ", "0"}], ",", " ", 
+    RowBox[{"then", " ", "rectangle", " ", "expands"}]}], " ", "*)"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"smartCrop", "[", "input_Image", "]"}], ":=", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"img", "=", 
+        RowBox[{"ImageCrop", "[", "input", "]"}]}], ",", "faces", ",", " ", 
+       "keypoints", ",", " ", "boundReg", ",", " ", "cm", ",", " ", 
+       "imgDimensions", ",", 
+       RowBox[{"perc", "=", "5"}]}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"faces", "=", 
+       RowBox[{"FindFaces", "[", "img", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"keypoints", "=", 
+       RowBox[{"ImageKeypoints", "[", 
+        RowBox[{"img", ",", " ", 
+         RowBox[{"MaxFeatures", "\[Rule]", "10"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"boundReg", "=", 
+       RowBox[{"BoundingRegion", "[", 
+        RowBox[{"keypoints", ",", " ", "\"\<MinRectangle\>\""}], "]"}]}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"cm", "=", 
+       RowBox[{"centerMass", "[", "keypoints", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"imgDimensions", "=", 
+       RowBox[{"ImageDimensions", "@", "img"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Length", "@", "faces"}], ">", "0"}], ",", 
+        RowBox[{"HighlightImage", "[", 
+         RowBox[{"img", ",", 
+          RowBox[{"applyMargin", "[", 
+           RowBox[{
+            RowBox[{"Last", "@", 
+             RowBox[{"SortBy", "[", 
+              RowBox[{"faces", ",", " ", "Area"}], "]"}]}], ",", 
+            "imgDimensions", ",", "perc"}], "]"}], ",", "\"\<Darken\>\""}], 
+         "]"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"aspectRatio", "[", "boundReg", "]"}], "<=", 
+           RowBox[{"16", "/", "9"}]}], ",", 
+          RowBox[{"HighlightImage", "[", 
+           RowBox[{"img", ",", 
+            RowBox[{"applyMargin", "[", 
+             RowBox[{"boundReg", ",", "imgDimensions", ",", "perc"}], "]"}], 
+            ",", "\"\<Darken\>\""}], "]"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"HighlightImage", "[", 
+           RowBox[{"img", ",", 
+            RowBox[{"Rectangle", "[", 
+             RowBox[{
+              RowBox[{"cm", "-", 
+               RowBox[{
+                RowBox[{"Mean", "[", "imgDimensions", "]"}], "/", "4"}]}], 
+              ",", 
+              RowBox[{"cm", "+", 
+               RowBox[{
+                RowBox[{"Mean", "[", "imgDimensions", "]"}], "/", "4"}]}]}], 
+             "]"}], ",", "\"\<Darken\>\""}], "]"}]}], "]"}]}], "]"}]}]}], 
+    "]"}]}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"smartCropSensMap", "[", "input_Image", "]"}], ":=", 
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"img", "=", 
+         RowBox[{"ImageCrop", "[", "input", "]"}]}], ",", " ", "mbin", ",", 
+        "sensMap", ",", "rects", ",", "boundReg", ",", 
+        RowBox[{"imgNet", "=", 
+         RowBox[{
+         "NetModel", "[", "\"\<Wolfram ImageIdentify Net V1\>\"", "]"}]}]}], 
+       "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"sensMap", "=", 
+        RowBox[{"networkSensitivityMap", "[", 
+         RowBox[{"img", ",", "imgNet"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       
+       RowBox[{"mbin", "=", 
+        RowBox[{"MorphologicalBinarize", "[", "sensMap", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"rects", "=", 
+        RowBox[{"Apply", "[", 
+         RowBox[{"Rectangle", ",", 
+          RowBox[{
+           RowBox[{"ComponentMeasurements", "[", 
+            RowBox[{"mbin", ",", "\"\<BoundingBox\>\""}], "]"}], "[", 
+           RowBox[{"[", 
+            RowBox[{"All", ",", "2"}], "]"}], "]"}], ",", 
+          RowBox[{"{", "1", "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"boundReg", "=", 
+          RowBox[{"Flatten", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"getRectCoords", "[", "#", "]"}], "&"}], "/@", 
+             "rects"}], ",", "1"}], "]"}]}], ";", "\[IndentingNewLine]", 
+         RowBox[{"boundReg", "=", 
+          RowBox[{"BoundingRegion", "[", 
+           RowBox[{"boundReg", ",", "\"\<MinRectangle\>\""}], "]"}]}], ";"}], 
+        "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"HighlightImage", "[", 
+        RowBox[{"img", ",", 
+         RowBox[{"Last", "@", 
+          RowBox[{"SortBy", "[", 
+           RowBox[{"rects", ",", "Area"}], "]"}]}]}], "]"}]}]}], "]"}]}], 
+   ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"smartCropYOLO", "[", "input_Image", "]"}], ":=", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"img", "=", 
+        RowBox[{"ImageCrop", "@", "input"}]}], ",", "objs", ",", "coords", 
+       ",", "boundReg"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"objs", "=", 
+       RowBox[{"ImageContents", "[", "img", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"coords", "=", 
+       RowBox[{"Round", "@", 
+        RowBox[{"Flatten", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"getRecCoords", "[", "#", "]"}], "&"}], "/@", 
+           RowBox[{"Normal", "@", 
+            RowBox[{"objs", "[", 
+             RowBox[{"All", ",", "\"\<BoundingBox\>\""}], "]"}]}]}], ",", 
+          "1"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"boundReg", "=", 
+       RowBox[{"BoundingRegion", "[", 
+        RowBox[{"coords", ",", "\"\<MinRectangle\>\""}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"HighlightImage", "[", 
+       RowBox[{"img", ",", "boundReg"}], "]"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.7402605113070507`*^9, 3.740260511972481*^9}, {
+   3.740261429967617*^9, 3.7402614344478483`*^9}, {3.740261465880849*^9, 
+   3.740261496915615*^9}, 3.740262826653214*^9, {3.740264219601532*^9, 
+   3.7402642268839912`*^9}, {3.740264701247916*^9, 3.740264716066907*^9}, {
+   3.740264757309559*^9, 3.7402648663310337`*^9}, {3.74026491663211*^9, 
+   3.740265091897193*^9}, {3.740265128267764*^9, 3.740265128601335*^9}, {
+   3.740265208029418*^9, 3.740265217891279*^9}, {3.7402653130157137`*^9, 
+   3.740265383001788*^9}, {3.7402654734450197`*^9, 3.740265514522539*^9}, {
+   3.7402655523702393`*^9, 3.740265555616621*^9}},
+ CellLabel->
+  "In[799]:=",ExpressionUUID->"fb1e30c3-19f3-41f7-b1ab-7eefb2ca84c5"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"imgIdNet", "=", 
+   RowBox[{"NetModel", "[", "\"\<Wolfram ImageIdentify Net V1\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Clear", "[", "coverImageAt", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"coverImageAt", "[", 
+     RowBox[{"image_Image", ",", "pos_List", ",", 
+      RowBox[{"r_:", 
+       RowBox[{"(", 
+        RowBox[{"1", "/", "6"}], ")"}]}], ",", 
+      RowBox[{"mean_:", 
+       RowBox[{"{", 
+        RowBox[{"0.45", ",", "0.45", ",", "0.45"}], "}"}]}]}], "]"}], ":=", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Block", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"dims", " ", "=", " ", 
+         RowBox[{"ImageDimensions", "[", "image", "]"}]}], ",", "img", " ", 
+        ",", "R"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"img", " ", "=", " ", 
+        RowBox[{"ImageResize", "[", 
+         RowBox[{"image", ",", "dims"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       
+       RowBox[{"R", " ", "=", " ", 
+        RowBox[{"Round", "[", 
+         RowBox[{"dims", " ", "r"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"ImageCompose", "[", "\[IndentingNewLine]", 
+        RowBox[{"img", ",", "\[IndentingNewLine]", 
+         RowBox[{"SetAlphaChannel", "[", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"ConstantImage", "[", 
+            RowBox[{
+             RowBox[{"PadRight", "[", 
+              RowBox[{"mean", ",", 
+               RowBox[{"ImageChannels", "[", "img", "]"}]}], "]"}], ",", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{"2", "R"}], "+", "1"}], ")"}], 
+              RowBox[{"{", 
+               RowBox[{"1", ",", "1"}], "}"}]}], ",", " ", 
+             RowBox[{"ColorSpace", "\[Rule]", 
+              RowBox[{"ImageColorSpace", "[", "img", "]"}]}]}], "]"}], ",", 
+           RowBox[{"Image", "@", 
+            RowBox[{"Normalize", "[", 
+             RowBox[{
+              RowBox[{"GaussianMatrix", "[", 
+               RowBox[{"{", "R", "}"}], "]"}], ",", "Max"}], "]"}]}]}], 
+          "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"Scaled", "[", "pos", "]"}]}], "\[IndentingNewLine]", 
+        "]"}]}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"--", "--"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Clear", "[", "networkSensitivityMap", "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"networkSensitivityMap", "[", 
+    RowBox[{"img_Image", ",", 
+     RowBox[{"network", ":", 
+      RowBox[{"(", 
+       RowBox[{"_NetChain", "|", "_NetGraph"}], ")"}]}], ",", " ", 
+     "opts___Rule"}], "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"concept", "=", 
+        RowBox[{"network", "[", 
+         RowBox[{"img", ",", "opts"}], "]"}]}], ",", "coverImages", ",", "w", 
+       ",", 
+       RowBox[{"dims", " ", "=", " ", 
+        RowBox[{"ImageDimensions", "[", "img", "]"}]}], ",", 
+       RowBox[{"mean", "=", 
+        RowBox[{"NetExtract", "[", 
+         RowBox[{"network", ",", 
+          RowBox[{"{", 
+           RowBox[{"\"\<Input\>\"", ",", "\"\<MeanImage\>\""}], "}"}]}], 
+         "]"}]}], ",", "\[IndentingNewLine]", 
+       RowBox[{"step", "=", 
+        RowBox[{"1", "/", "6"}]}]}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Print", "[", "concept", "]"}], ";", " ", "\[IndentingNewLine]", 
+      RowBox[{"coverImages", "=", 
+       RowBox[{"Table", "[", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"coverImageAt", "[", 
+          RowBox[{"img", ",", 
+           RowBox[{"{", 
+            RowBox[{"x", ",", "y"}], "}"}], ",", "step", ",", "mean"}], "]"}],
+          ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{"y", ",", 
+           RowBox[{"1", "-", 
+            RowBox[{"step", "/", "2"}]}], ",", 
+           RowBox[{"step", "/", "2"}], ",", 
+           RowBox[{"-", "step"}]}], "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{"x", ",", 
+           RowBox[{"step", "/", "2"}], ",", 
+           RowBox[{"1", "-", 
+            RowBox[{"step", "/", "2"}]}], ",", "step"}], "}"}]}], 
+        "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"w", " ", "=", " ", 
+       RowBox[{"First", "@", 
+        RowBox[{"Dimensions", "[", "coverImages", "]"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Partition", "[", 
+       RowBox[{
+        RowBox[{"Lookup", "[", 
+         RowBox[{
+          RowBox[{"network", "[", 
+           RowBox[{
+            RowBox[{"Flatten", "[", "coverImages", "]"}], ",", 
+            "\"\<Probabilities\>\"", ",", "opts"}], "]"}], ",", "concept"}], 
+         "]"}], ",", "w"}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"RemoveAlphaChannel", "[", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"SetAlphaChannel", "[", "\[IndentingNewLine]", 
+         RowBox[{"img", ",", "\[IndentingNewLine]", 
+          RowBox[{"ImageAdjust", "@", 
+           SuperscriptBox[
+            RowBox[{"Blur", "[", 
+             RowBox[{
+              RowBox[{"ImageResize", "[", 
+               RowBox[{
+                RowBox[{"ImageAdjust", "@", 
+                 RowBox[{"ColorNegate", "@", 
+                  RowBox[{"Image", "[", 
+                   RowBox[{"Partition", "[", 
+                    RowBox[{
+                    RowBox[{"Lookup", "[", 
+                    RowBox[{
+                    RowBox[{"network", "[", 
+                    RowBox[{
+                    RowBox[{"Flatten", "[", "coverImages", "]"}], ",", 
+                    "\"\<Probabilities\>\"", ",", "opts"}], "]"}], ",", 
+                    "concept"}], "]"}], ",", "w"}], "]"}], "]"}]}]}], ",", 
+                "dims"}], "]"}], ",", 
+              RowBox[{"dims", " ", 
+               RowBox[{"step", "/", 
+                RowBox[{"Sqrt", "[", "2", "]"}]}]}]}], "]"}], "2"]}]}], 
+         "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", "Black"}], 
+       "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.740260556794115*^9, 
+  3.7402605683854427`*^9}},ExpressionUUID->"00dfa210-fc37-4507-8df4-\
+20116cca29ef"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"images", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"Import", "[", 
+     RowBox[{
+     "\"\</Users/markseliaev/Documents/WolframSummerSchool/trainSet/Stimuli/\
+Action/\>\"", ",", " ", "\"\<*.jpg\>\""}], "]"}], "[", 
+    RowBox[{"[", 
+     RowBox[{";;", "32"}], "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"images", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"ImageResize", "[", 
+      RowBox[{"#", ",", "300"}], "]"}], "&"}], "/@", "images"}]}], ";", " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "resizing", " ", "images", " ", "so", " ", "cropping", " ", "could", " ", 
+    "go", " ", "faster"}], " ", "*)"}]}]}], "Input",
+ CellChangeTimes->{{3.740260646364366*^9, 3.740260648092577*^9}, {
+  3.740260809468947*^9, 3.7402608100289507`*^9}, {3.7402608669223413`*^9, 
+  3.740260913558564*^9}, {3.740260965120072*^9, 3.740260965940061*^9}, {
+  3.7402628004500504`*^9, 
+  3.740262816527155*^9}},ExpressionUUID->"18a3c7ac-ef93-4535-927f-\
+89c6198adb36"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"smartCrop", "[", 
+    RowBox[{"images", "[", 
+     RowBox[{"[", "i", "]"}], "]"}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"i", ",", "1", ",", "32", ",", "1"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.7402607341765833`*^9, 3.740260813766491*^9}, {
+  3.740261346080562*^9, 3.740261346853744*^9}},
+ CellLabel->
+  "In[806]:=",ExpressionUUID->"9ab8845d-0c18-4846-95ff-283f7fbc46b3"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`i$$ = 20, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{
+      Hold[$CellContext`i$$], 1, 32, 1}}, Typeset`size$$ = {198., {82., 87.}},
+     Typeset`update$$ = 0, Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`i$496511$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, "Variables" :> {$CellContext`i$$ = 1}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`i$$, $CellContext`i$496511$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> $CellContext`smartCrop[
+        Part[$CellContext`images, $CellContext`i$$]], 
+      "Specifications" :> {{$CellContext`i$$, 1, 32, 1}}, "Options" :> {}, 
+      "DefaultOptions" :> {}],
+     ImageSizeCache->{244., {127., 133.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.740260795164925*^9, 3.740260820250743*^9}, 
+   3.740261347420827*^9, 3.740265416397256*^9, 3.740265562222739*^9},
+ CellLabel->
+  "Out[806]=",ExpressionUUID->"8e7c05d1-7be5-48dd-a77b-529a204e061b"]
+}, Open  ]]
+},
+WindowSize->{808, 755},
+WindowMargins->{{Automatic, 256}, {12, Automatic}},
+FrontEndVersion->"11.3 for Mac OS X x86 (32-bit, 64-bit Kernel) (March 7, \
+2018)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[561, 20, 9917, 258, 1060, "Input",ExpressionUUID->"fb1e30c3-19f3-41f7-b1ab-7eefb2ca84c5"],
+Cell[10481, 280, 6449, 157, 942, "Input",ExpressionUUID->"00dfa210-fc37-4507-8df4-20116cca29ef",
+ InitializationCell->True],
+Cell[16933, 439, 1003, 25, 115, "Input",ExpressionUUID->"18a3c7ac-ef93-4535-927f-89c6198adb36"],
+Cell[CellGroupData[{
+Cell[17961, 468, 454, 11, 30, "Input",ExpressionUUID->"9ab8845d-0c18-4846-95ff-283f7fbc46b3"],
+Cell[18418, 481, 1789, 36, 279, "Output",ExpressionUUID->"8e7c05d1-7be5-48dd-a77b-529a204e061b"]
+}, Open  ]]
+}
+]
+*)
+
